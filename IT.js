@@ -99,7 +99,8 @@ class IS {
     }
 
     _array(a) {
-        return ( a instanceof Array );
+        return Array.isArray(a)
+        // return ( a instanceof Array );
     }
 
     _function(a) {

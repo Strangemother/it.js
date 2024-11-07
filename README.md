@@ -1,6 +1,10 @@
-# IT.is.js
+<div align="center">
 
-> Simple type testing in JS using a simple "it" unit.
+# IT.js
+
+Simple type testing in JS using a simple `IT.is()` unit.
+
+</div>
 
 
 `it.js`, a minimalist testing library designed to simplify the often complex task of type checking in JavaScript.
@@ -14,7 +18,41 @@ IT(100).is.number()
 
 [Head To the function list](#Functions)
 
-## Signatures
+
+# Installation
+
+To get started, install the file `IT.js`
+
+## Basic Usage
+
+Once installed the `IT` unit is ready to use:
+
+```js
+
+let editData = undefined;
+
+if( IT.is(undefined, editData) ) {
+    editData = {}
+}
+
+if( IT(editData).is.object() ){
+
+    if( IT(editData.goFunction).is('function') ) {
+        editData.goFunction()
+    }
+}
+```
+
+> [!TIP]
+> When calling upon `IT.is` we access the _Proxy_ of the `IS` instance, providing the `IT.is.tester()` methods, or a `IT.is()` caller.
+
+## Syntax
+
+The `IT` component provides an entry point for the testing functionality. The `IT` unit is designed to be a lightweight capture of a _value_ or the access for the `is()` function.
+The `IS` component; `IT.is` provides the testing functions for the library. This is a plain class type, hosting many test functions.
+
+
+### Signatures
 
 `it.js` provides multiple methods of entry, allowing you to perform various type checks with ease.
 
@@ -48,35 +86,6 @@ IT().is('string', value)
 // But also don't worry about scoping.
 new IT(value).is('string')
 ```
-
-
-# Getting Started
-
-To get started, install the file `it.js`
-
-
-## Syntax
-
-The `IT` component provides an entry point for the testing functionality. The `IT` unit is designed to be a lightweight capture of a _value_ or the access for the `is()` function. The `IS` component; `IT.is` provides the testing functions for the library. This is a plain class type, hosting many test functions.
-
-**TL:DR;**
-
-```js
-IT(value).is[type]()
-IT(value).is(type)
-
-IT.is(type, value)
-IT().is(type, value)
-
-(new IT(value)).is(type)
-(new IT).is(type, value)
-new IT(value).is(type)
-```
-
----
-
-When calling upon `IT.is...` we access the _Proxy_ of the `IS` instance, providing the `IT.is.tester()` methods, or a `IT.is()` caller.
-
 
 ### Value
 
