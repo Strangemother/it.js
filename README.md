@@ -19,12 +19,12 @@ Simple type testing in JS using a simple `IT.is()` unit.
 
 ```js
 IT(100).is.number()
-// true
+IT.is.number(1001)
+IT.is(Number, 202.2)
 
-class MyClass {}
+IT(202.2).is.float()
 
-IT(MyClass).is.class()
-// true
+IT(400).is.integer()
 ```
 
 </td><td>
@@ -32,14 +32,10 @@ IT(MyClass).is.class()
 
 ```js
 IT('Easy').is(String)
-// true
-
-IT.is.undefined(undefined)
-IT(undefined).is(undefined)
-// true
+IT([]).is(Array)
 
 IT(true).is(IT.BOOLEAN)
-// true
+IT.is(IT.BOOLEAN, true)
 ```
 
 
@@ -47,12 +43,12 @@ IT(true).is(IT.BOOLEAN)
 
 
 ```js
-IT([]).is(Array)
-// true
-IT.is(Number, 202.2)
-// true
-IT(202.2).is.float()
-// true
+IT.is.undefined(undefined)
+IT(undefined).is(undefined)
+
+class MyClass {}
+
+IT(MyClass).is.class()
 ```
 
 
