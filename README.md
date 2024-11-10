@@ -12,6 +12,11 @@ Simple type testing in JS using a simple `IT.is()` unit.
 
 `it` offers a suite of type-checking functions, all accessible through a single method: `it.is`. Whether you're checking numbers, strings, objects, arrays, or functions, it.js provides a quick and intuitive way to validate your data types.
 
+
+<table>
+
+<tbody><tr valign="top"><td>
+
 ```js
 IT(100).is.number()
 // true
@@ -21,6 +26,24 @@ class MyClass {}
 IT(MyClass).is.class()
 // true
 ```
+
+</td><td>
+
+
+```js
+IT('Easy').is(String)
+// true
+
+IT.is.undefined(undefined)
+// true
+
+IT.is.null(undefined)
+// false
+```
+
+
+</td></tbody></table>
+
 
 [Head To the function list](#Functions)
 
