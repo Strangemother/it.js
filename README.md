@@ -35,10 +35,24 @@ IT('Easy').is(String)
 // true
 
 IT.is.undefined(undefined)
+IT(undefined).is(undefined)
 // true
 
-IT.is.null(undefined)
-// false
+IT(true).is(IT.BOOLEAN)
+// true
+```
+
+
+</td><td>
+
+
+```js
+IT([]).is(Array)
+// true
+IT.is(Number, 202.2)
+// true
+IT(202.2).is.float()
+// true
 ```
 
 
