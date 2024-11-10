@@ -14,6 +14,11 @@ Simple type testing in JS using a simple `IT.is()` unit.
 ```js
 IT(100).is.number()
 // true
+
+class MyClass {}
+
+IT(MyClass).is.class()
+// true
 ```
 
 [Head To the function list](#Functions)
@@ -65,6 +70,12 @@ IT(value).is.string()
 // Imperative format alternative.
 IT(value).is('string')
 
+// generic objects.
+IT(value).is(String)
+
+// Const
+IT(value).is(IT.STRING)
+
 // Also accessible through item definitions.
 IT(value).is['string']()
 
@@ -112,7 +123,22 @@ IT.is[type](value)
 
 ### Type
 
-The `type` is the expected evaluation type, such as `"string"`. The type methods are  accessible through the `IS` instance
+The `type` is the expected evaluation type, such as `"string"`. The type methods are  accessible through the `IS` instance:
+
+Available Types:
+
++ null, undefined, blank
++ string, number, object, array, function,
++ boolean, true, false,
++ jquery, percentage, class
+
+In all cases we can use a string, a constant, or the function for any type:
+
+```js
+IT(value).is('number')
+IT(value).is(IT.NUMBER)
+IT(value).is.number()
+```
 
 Same as above, When applying the `value` to IT, the first argument for the `is()` caller should be the `type`. The _type_ is always the first argument for the `is()` method:
 
@@ -136,6 +162,9 @@ This works for unique types:
 
 ```js
 IT.is.undefined(window.nonExistentValue)
+// true
+
+IT.is.class(class Example {})
 // true
 ```
 
@@ -222,6 +251,7 @@ Assert the given value is a `string`:
 
 ```js
 IT.is.string(value)
+IT(value).is(String)
 IT.is("string", value)
 IT(value).is.string()
 ```
@@ -232,6 +262,7 @@ Assert the given value is a `number`:
 
 ```js
 IT.is.number(value)
+IT(value).is(Number)
 IT.is("number", value)
 IT(value).is.number()
 ```
@@ -242,6 +273,7 @@ Assert the given value is a `boolean`:
 
 ```js
 IT.is.boolean(value)
+IT(value).is(Boolean)
 IT.is("boolean", value)
 IT(value).is.boolean()
 ```
@@ -252,6 +284,7 @@ Assert the given value is an `object`:
 
 ```js
 IT.is.object(value)
+IT(value).is(Object)
 IT.is("object", value)
 IT(value).is.object()
 ```
@@ -262,6 +295,7 @@ Assert the given value is an `array`:
 
 ```js
 IT.is.array(value)
+IT(value).is(Array)
 IT.is("array", value)
 IT(value).is.array()
 ```
@@ -272,6 +306,7 @@ Assert the given value is a `function`:
 
 ```js
 IT.is.function(value)
+IT(value).is(Function)
 IT.is("function", value)
 IT(value).is.function()
 ```
@@ -292,6 +327,7 @@ Assert the given value is `true`:
 
 ```js
 IT.is.true()
+IT(value).is(true)
 IT(value).is.true(value)
 IT(value).is("true", value)
 ```
@@ -312,6 +348,7 @@ Assert the given value is `percentage` string or number:
 
 ```js
 IT.is.percentage(value)
+IT(value).is(false)
 IT.is("percentage", value)
 IT(value).is.percentage()
 ```

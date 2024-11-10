@@ -65,14 +65,18 @@ class IS {
     }
 
     _undefined(a) {
-        return ( this._null( a ) || typeof a == 'undefined' || a === 'undefined' );
+        return ( this._null( a )
+                || typeof a == 'undefined'
+                || a === 'undefined'
+            );
     }
 
     _string(a) {
         return (
-            ( a instanceof String || typeof a == 'string' )
-                && !this._undefined( a ) && !this._true( a )
-                && !this._false( a )
+                ( a instanceof String || typeof a == 'string' )
+                    && !this._undefined(a)
+                    && !this._true(a)
+                    && !this._false(a)
             );
     }
 
@@ -85,7 +89,10 @@ class IS {
 
     _boolean(a) {
         return (
-            a instanceof Boolean || typeof a == 'boolean' || this._true( a ) || this._false( a )
+            a instanceof Boolean
+            || typeof a == 'boolean'
+            || this._true(a)
+            || this._false(a)
             );
     }
 
@@ -121,15 +128,76 @@ class IS {
     }
 
     _percentage(a) {
-        return ( this._string( a ) && a.slice( -1 ) == '%'
-                && this._number( parseInt( a.slice( 0, -1 ), 10 ) )
+        return ( this._string( a )
+                && a.slice( -1 ) == '%'
+                && this._number(parseInt(a.slice(0, -1), 10))
             );
+    }
+
+    _blank(stringly) {
+        /*
+            Check if the given entity is a blank string or something
+            representing a blank string; null, undefined
+
+                IT.is.blank('') // true
+                IT.is.blank(null) // true
+                IT.is.blank(undefined) // true
+                IT.is.blank('#') // false
+                IT.is.blank(3) // false
+                IT.is.blank({}) // false
+
+            Note, not all _nully_ are "blank"; for example boolean `false`
+            is *not* blank. As a boolean is not a _nully_ entity, and/or
+            does not have a length of 0.
+
+                IT.is.blank(false) // false
+                IT.is.blank(true) // false
+
+            An empty objects are *not* blank.
+            As it _is_ an object or thing. albeit *empty*.
+
+                IT.is.blank({}) // false
+                IT.is.blank([]) // false
+         */
+        return !(
+                !(stringly?.length == 0)
+                && !this._null(stringly)
+                && !this._undefined(stringly)
+            )
+    }
+
+    x_empty(entity) {
+        /*
+            Something of which can iterate but is has no items.
+            An empty object, list, string - but not functions, numbers, booleans
+         */
+    }
+
+    /* Util */
+    _class(e){
+        /* Cheap check to determin if an entity is a class, over an
+        object or instance of a class.
+
+            IT.is.class(class {}) // true
+            IT.is.class(String) // true
+
+            IT.is.class(new class {}) // false
+            IT.is.class({})     // false
+        */
+        var isf = this._function(e)
+            , hop = e && e.hasOwnProperty('prototype')
+
+        // is function and has protoype.
+        // should be a class requiring new
+        return (isf && hop)
     }
 
     alertUnknown(name, prop, args) {
         throw new Error(`IT::IS property does not exist ${name}`)
     }
+
 }
+
 
 
 const itCaller = function IT(things){
@@ -137,6 +205,7 @@ const itCaller = function IT(things){
     console.error('itCaller stub head called', arguments)
     return itInstance
 }
+
 
 const BLANK = {}
 
@@ -174,9 +243,31 @@ class IT {
         return this._value
     }
 
+    getAvailable() {
+        let _is = this.getIsObject()
+        let items = Object.getOwnPropertyNames(Object.getPrototypeOf(_is))
+        let res = []
+
+        items.forEach(function(e,i) {
+            if(!e.startsWith('_')) {
+                return
+            }
+
+            res.push(e.slice(1))
+        })
+        return res
+    }
+
+    getIsObject() {
+        /* return the true IS() instance, not the proxy ( getIsInstance() )
+        */
+        if(!this._is) {
+            this._is = new IS()
+        }
+        return this._is;
+    }
 
     getIsInstance() {
-
         if(this._isProxy) {
             return this._isProxy
         }
@@ -186,9 +277,10 @@ class IT {
             console.error('isCaller function call. with', arguments)
         }
 
-        this._is = new IS()
+        this._is = this.getIsObject()
         const _isProxyHandler = {
             parentIt: this
+            , invertValue: false
             , construct(target, args) {
                 /* Upon new IT() instance.
 
@@ -258,15 +350,42 @@ class IT {
                     IT.is.string
                 */
 
+                if(prop == 'not') {
+                    /* _not_ switch property activator. If the call is:
+
+                        IT.is.not.X
+
+                    The return from `not` is _this_ _isProxy, with the
+                    `invertValue` enabled.
+
+                    Any subsequent calls _flip_ the output boolean value.
+                    */
+                    this.invertValue = !this.invertValue
+                    console.log('inverted=', this.invertValue)
+                    return this.parentIt._isProxy
+                }
+
                 console.log(`_is_ get prop ${prop}`);
-                let v = function() {
+                /* The given `prop` is a method-name to _call_ later (as a test).
+                with the value to test, return a function of which
+                will run the test when called.
+
+                    myTest = IT.is.myTest == callerFunction
+                    myTest() // runs this function.
+                */
+                let callerFunction = function() {
                     /* caller for this prop*/
                     let args = Array.from(arguments)
-                    return this.is.runTest(this.prop, args)
+                    const r = this.is.runTest(this.prop, args)
+                    if(this.is.invertValue) {
+                        return !r
+                    }
+                    return r
+
                 }.bind({ is: this, prop})
 
-                return v
                 //return Reflect.get(...arguments)
+                return callerFunction
             }
         };
 
@@ -288,6 +407,29 @@ class IT {
         // console.log(`IT::functionCall::${args}`);
         // should return a bound instance of IT.
         return new IT(...args)
+    }
+
+    isConstant(prop='', caseSensitive=true, validate=true){
+        /* Check if the given property is a CONSTANT, a name to call on the
+        _is_ instance. If the third argument `validate` is true, the constant
+        is tested to ensure it _exists_.
+
+            isConstant('FUNCTION', true)
+        */
+        let isUpper = caseSensitive ? (prop.toUpperCase() === prop): true
+
+        if(isUpper && validate) {
+            let _is = this.getIsObject()
+            return _is[`_${prop.toLowerCase()}`] !== undefined
+        }
+
+        return isUpper
+    }
+
+    getConstantFunction(name) {
+        /* If the given name is a valid function, return the
+        function*/
+        return this.getIsObject()[`_${name.toLowerCase()}`]
     }
 }
 
@@ -320,6 +462,21 @@ const proxyHandler = {
         if(itInstance[prop]) {
             console.log('IT; Good prop:' , prop)
             return itInstance[prop]
+        }
+
+        // if the string is completely uppercase,
+        // infer const and check.
+        //
+        // is const
+        /* Check if the given prop is a valid const.
+        If true, return the name, used for the IS
+
+            lowerName = IT.FUNCTION
+            IT.is(lowerName, function(){})
+            */
+        if(itInstance.isConstant(prop, true, true)) {
+            return prop.toLowerCase()
+            // return itInstance.getConstantFunction(prop)
         }
 
         console.log('?' , prop)
