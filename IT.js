@@ -87,6 +87,15 @@ class IS {
             );
     }
 
+    _integer(a) {
+        return this._number(a) && (~~a === a)
+    }
+
+    _float(a) {
+        /* has > 0.00 decimal */
+        return this._number(a) && (~~a !== a)
+    }
+
     _boolean(a) {
         return (
             a instanceof Boolean
@@ -292,7 +301,7 @@ class IT {
             }
 
             , runTest(prop, args) {
-                let [p,a] = this.resolveValues(prop,args)
+                let [p, a, pv] = this.resolveValues(prop,args)
                 let name = `_${p}`
                 let _is = this.parentIt._is
                 let method = _is[name]
@@ -302,11 +311,12 @@ class IT {
                 }
 
                 let boundIsMethod = method.bind(_is)
-                return boundIsMethod(a)
+                return boundIsMethod(a, pv)
             }
 
             , resolveValues(prop=BLANK, args){
-                let v = this.getParentValue()
+                const parentValue = this.getParentValue()
+                let v = parentValue
                 let l = args.length
                 console.log('--- it.is.test', prop, '|', v, '|', args)
 
@@ -328,7 +338,7 @@ class IT {
                     v = args[0]
                 }
 
-                let res = [prop, v]
+                let res = [prop, v, parentValue == undefined? args[0]: parentValue]
                 console.log('--- it.is.test', res)
                 return res
             }

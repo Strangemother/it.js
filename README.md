@@ -4,10 +4,11 @@
 
 Simple type testing in JS using a simple `IT.is()` unit.
 
+`it.js`, a minimalist testing library designed to simplify the often complex task of type checking in JavaScript.
+
 </div>
 
-
-`it.js`, a minimalist testing library designed to simplify the often complex task of type checking in JavaScript.
+---
 
 `it` offers a suite of type-checking functions, all accessible through a single method: `it.is`. Whether you're checking numbers, strings, objects, arrays, or functions, it.js provides a quick and intuitive way to validate your data types.
 
@@ -28,23 +29,31 @@ IT(MyClass).is.class()
 
 To get started, install the file `IT.js`
 
+```jinja
+<script src="IT.js"></script>
+```
+
+
 ## Basic Usage
 
-Once installed the `IT` unit is ready to use:
+Once installed the `IT` unit is ready to use. There are [many methods](#Signatures) to call the library, here's a couple:
 
 ```js
 
 let editData = undefined;
 
+/* Test if the value is undefined, two args method */
 if( IT.is(undefined, editData) ) {
     editData = {}
 }
 
+/* Check if it is an object, method manner */
 if( IT(editData).is.object() ){
 
-    if( IT(editData.goFunction).is('function') ) {
-        editData.goFunction()
-    }
+    /* Check if a function exists, stringly checking */
+    const isFunc = IT(editData.goFunction).is('function')
+
+    if(isFunc) { editData.goFunction() }
 }
 ```
 
@@ -127,10 +136,12 @@ The `type` is the expected evaluation type, such as `"string"`. The type methods
 
 Available Types:
 
-+ null, undefined, blank
-+ string, number, object, array, function,
-+ boolean, true, false,
-+ jquery, percentage, class
++ `object`, `array`, `function`
++ `string`, `blank`
++ `number`, `integer`, `float`
++ `boolean`, `true`, `false`
++ `null`, `undefined`
++ `class`, `jquery`, `percentage`
 
 In all cases we can use a string, a constant, or the function for any type:
 
